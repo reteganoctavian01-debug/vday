@@ -116,7 +116,7 @@
       margin: 10px 0;
     }
 
-    .fireworks {
+    .tenor-gif-embed {
       width: min(380px, 90vw);
       margin: 0 auto;
       display: block;
@@ -183,11 +183,10 @@
 
     <section class="result" id="result">
       <h2>YAY! 🎉</h2>
-     <img
-  class="fireworks"
-  src="https://media.tenor.com/gUiu1KeKx20AAAAC/happy-valentines-day-petals.gif"
-  alt="Happy Valentine's Day"
-/>
+      <div class="tenor-gif-embed" data-postid="10984219848292367509" data-share-method="host" data-aspect-ratio="1.31053" data-width="100%">
+        <a href="https://tenor.com/view/happy-valentines-day-petals-bed-throw-petals-gif-10984219848292367509">Happy Valentines Day Petals GIF</a>
+      </div>
+      <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
     </section>
   </main>
 
@@ -292,7 +291,7 @@
     /* ---------- YES CLICK ---------- */
     yesBtn.addEventListener("click", () => {
       zone.style.display = "none";
-      hint.style.display = "none";     // HIDE THE HINT
+      hint.style.display = "none";
       result.style.display = "block";
       resizeConfettiCanvas();
       fullScreenConfetti();
