@@ -8,6 +8,10 @@
   <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
+  <!-- Sound effects -->
+  <audio id="yesSound" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3" preload="auto"></audio>
+  <audio id="runSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
+
   <style>
     :root {
       --bg1: #ffd6e7;
@@ -122,6 +126,31 @@
       display: block;
     }
 
+    /* SHAKE ANIMATION */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    /* FLOATING HEARTS */
+    @keyframes heartFloat {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    .floating-heart {
+      position: fixed;
+      font-size: 30px;
+      z-index: 9998;
+      animation: heartFloat 4s linear infinite;
+      pointer-events: none;
+    }
+
     @keyframes pop {
       from { transform: scale(.96); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
@@ -218,28 +247,47 @@
     });
 
     function fullScreenConfetti() {
-      const end = Date.now() + 1600;
+      const end = Date.now() + 3000; // Mai lung pentru efect dramatic
 
       (function frame() {
         confettiInstance({
-          particleCount: 12,
-          spread: 90,
-          startVelocity: 45,
-          ticks: 180,
+          particleCount: 15,
+          spread: 100,
+          startVelocity: 50,
+          ticks: 200,
+          shapes: ['circle', 'square'],
+          colors: ['#ff3b7a', '#ff1f68', '#ffd6e7', '#ff69b4'],
           origin: { x: Math.random(), y: Math.random() * 0.3 }
         });
         if (Date.now() < end) requestAnimationFrame(frame);
       })();
 
+      // Confetti în val-uri
       setTimeout(() => {
         confettiInstance({
-          particleCount: 300,
-          spread: 140,
-          startVelocity: 60,
-          ticks: 220,
-          origin: { x: 0.5, y: 0.55 }
+          particleCount: 400,
+          spread: 160,
+          startVelocity: 70,
+          ticks: 250,
+          origin: { x: 0.5, y: 0.6 }
         });
-      }, 300);
+      }, 400);
+    }
+
+    /* ---------- HEART RAIN ---------- */
+    function createHeartRain() {
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          const heart = document.createElement('div');
+          heart.className = 'floating-heart';
+          heart.textContent = '❤️';
+          heart.style.left = Math.random() * 100 + 'vw';
+          heart.style.animationDelay = Math.random() * 2 + 's';
+          heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 6000);
+        }, i * 200);
+      }
     }
 
     /* ---------- YES BUTTON GROWS ---------- */
@@ -274,16 +322,49 @@
       noBtn.style.top = newTop + "px";
       noBtn.style.transform = "none";
 
+      // Shake effect
+      noBtn.classList.add('shake');
+      setTimeout(() => noBtn.classList.remove('shake'), 300);
+
+      // Sound effect
+      const runSound = document.getElementById('runSound');
+      runSound.currentTime = 0;
+      runSound.play().catch(() => {}); // Catch pentru cazul în care autoplay e blocat
+
       growYes();
     }
 
+    /* ---------- MOUSE MOVE WITH HEART PARTICLES ---------- */
     zone.addEventListener("pointermove", e => {
       const b = noBtn.getBoundingClientRect();
       const d = Math.hypot(
         (b.left + b.width / 2) - e.clientX,
         (b.top + b.height / 2) - e.clientY
       );
-      if (d < 140) moveNo(e.clientX, e.clientY);
+      if (d < 140) {
+        moveNo(e.clientX, e.clientY);
+        
+        // Particule de inimi
+        if (Math.random() > 0.7) {
+          const particle = document.createElement('span');
+          particle.textContent = '💕';
+          particle.style.position = 'fixed';
+          particle.style.left = e.clientX + 'px';
+          particle.style.top = e.clientY + 'px';
+          particle.style.fontSize = '20px';
+          particle.style.pointerEvents = 'none';
+          particle.style.transition = 'all 0.6s ease-out';
+          particle.style.zIndex = '9999';
+          document.body.appendChild(particle);
+          
+          setTimeout(() => {
+            particle.style.transform = 'translateY(-50px)';
+            particle.style.opacity = '0';
+          }, 50);
+          
+          setTimeout(() => particle.remove(), 650);
+        }
+      }
     });
 
     noBtn.addEventListener("click", e => e.preventDefault());
@@ -293,16 +374,14 @@
       zone.style.display = "none";
       hint.style.display = "none";
       result.style.display = "block";
+      
+      // Sound effect
+      document.getElementById('yesSound').play().catch(() => {});
+      
       resizeConfettiCanvas();
       fullScreenConfetti();
+      createHeartRain();
     });
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
